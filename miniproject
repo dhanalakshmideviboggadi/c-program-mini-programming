@@ -1,0 +1,166 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_STUDENTS 100
+
+// Structure to store student information
+struct Student {
+    int id;
+    char name[50];
+    int marks[5]; // Assuming 5 subjects
+    float average;
+};
+
+// Function prototypes
+void addStudent(struct Student students[], int *count);
+void displayAllRecords(struct Student students[], int count);
+void searchById(struct Student students[], int count, int id);
+void searchByName(struct Student students[], int count, char name[]);
+void calculateAverageMarks(struct Student students[], int count);
+
+int main() {
+    struct Student students[MAX_STUDENTS];
+    int count = 0; // Number of students in the record
+    int choice, id;
+    char name[50];
+    
+    while (1) {
+        printf("\nStudent Record Management System\n");
+        printf("1. Add Student Record\n");
+        printf("2. Display All Records\n");
+        printf("3. Search by ID\n");
+        printf("4. Search by Name\n");
+        printf("5. Calculate Average Marks for Class\n");
+        printf("6. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        
+        switch (choice) {
+            case 1:
+                addStudent(students, &count);
+                break;
+            case 2:
+                displayAllRecords(students, count);
+                break;
+            case 3:
+                printf("Enter Student ID to search: ");
+                scanf("%d", &id);
+                searchById(students, count, id);
+                break;
+            case 4:
+                printf("Enter Student Name to search: ");
+                getchar(); // To consume the newline left by previous scanf
+                fgets(name, sizeof(name), stdin);
+                name[strcspn(name, "\n")] = 0; // Remove newline character
+                searchByName(students, count, name);
+                break;
+            case 5:
+                calculateAverageMarks(students, count);
+                break;
+            case 6:
+                printf("Exiting the program...\n");
+                return 0;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+    
+    return 0;
+}
+
+// Function to add a student record
+void addStudent(struct Student students[], int *count) {
+    if (*count >= MAX_STUDENTS) {
+        printf("Cannot add more students. The record is full.\n");
+        return;
+    }
+    
+    printf("\nEnter student ID: ");
+    scanf("%d", &students[*count].id);
+    printf("Enter student name: ");
+    getchar(); // To consume the newline character left by previous scanf
+    fgets(students[*count].name, sizeof(students[*count].name), stdin);
+    students[*count].name[strcspn(students[*count].name, "\n")] = 0; // Remove newline character
+    
+    printf("Enter marks for 5 subjects: ");
+    int sum = 0;
+    for (int i = 0; i < 5; i++) {
+        scanf("%d", &students[*count].marks[i]);
+        sum += students[*count].marks[i];
+    }
+    
+    students[*count].average = sum / 5.0;
+    (*count)++;
+    printf("Student record added successfully!\n");
+}
+
+// Function to display all student records
+void displayAllRecords(struct Student students[], int count) {
+    if (count == 0) {
+        printf("No student records found.\n");
+        return;
+    }
+    
+    printf("\nAll Student Records:\n");
+    for (int i = 0; i < count; i++) {
+        printf("ID: %d\n", students[i].id);
+        printf("Name: %s\n", students[i].name);
+        printf("Marks: ");
+        for (int j = 0; j < 5; j++) {
+            printf("%d ", students[i].marks[j]);
+        }
+        printf("\nAverage Marks: %.2f\n\n", students[i].average);
+    }
+}
+
+// Function to search a student by ID
+void searchById(struct Student students[], int count, int id) {
+    for (int i = 0; i < count; i++) {
+        if (students[i].id == id) {
+            printf("\nStudent found:\n");
+            printf("ID: %d\n", students[i].id);
+            printf("Name: %s\n", students[i].name);
+            printf("Marks: ");
+            for (int j = 0; j < 5; j++) {
+                printf("%d ", students[i].marks[j]);
+            }
+            printf("\nAverage Marks: %.2f\n", students[i].average);
+            return;
+        }
+    }
+    printf("Student with ID %d not found.\n", id);
+}
+
+// Function to search a student by name
+void searchByName(struct Student students[], int count, char name[]) {
+    for (int i = 0; i < count; i++) {
+        if (strcmp(students[i].name, name) == 0) {
+            printf("\nStudent found:\n");
+            printf("ID: %d\n", students[i].id);
+            printf("Name: %s\n", students[i].name);
+            printf("Marks: ");
+            for (int j = 0; j < 5; j++) {
+                printf("%d ", students[i].marks[j]);
+            }
+            printf("\nAverage Marks: %.2f\n", students[i].average);
+            return;
+        }
+    }
+    printf("Student with Name %s not found.\n", name);
+}
+
+// Function to calculate the average marks for the class
+void calculateAverageMarks(struct Student students[], int count) {
+    if (count == 0) {
+        printf("No student records found.\n");
+        return;
+    }
+    
+    int totalMarks = 0;
+    for (int i = 0; i < count; i++) {
+        totalMarks += students[i].average * 5; // multiply by 5 subjects to get total marks
+    }
+    
+    float classAverage = totalMarks / (float)(count * 5); // Average for the whole class
+    printf("Class Average Marks: %.2f\n", classAverage);
+}
